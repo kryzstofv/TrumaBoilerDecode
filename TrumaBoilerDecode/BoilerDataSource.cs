@@ -21,6 +21,10 @@ namespace TrumaBoilerDecode
 
         //subscriber to Truma Control Panel Setting Data, i.e. what has been selected on the panel
         public event EventHandler<DisplayDataEventArgs> NewDisplayData;
+        public event EventHandler<GenericLinMessageEventArgs> Cmd3CEvent;
+        public event EventHandler<GenericLinMessageEventArgs> Cmd7DEvent;
+        public event EventHandler<GenericLinMessageEventArgs> Cmd61Event;
+        public event EventHandler<GenericLinMessageEventArgs> CmdE2Event;
 
 
         public BoilerDataSource(string comPort)
@@ -131,6 +135,22 @@ namespace TrumaBoilerDecode
                         NewDisplayData?.Invoke(this, publishData);
 
                         break;
+                    case 0x3C:
+                        GenericLinMessageEventArgs publishData1 = new GenericLinMessageEventArgs(m);
+                        Cmd3CEvent?.Invoke(this, publishData1);
+                        break;
+                    case 0x7D:
+                        GenericLinMessageEventArgs publishData2 = new GenericLinMessageEventArgs(m);
+                        Cmd7DEvent?.Invoke(this, publishData2);
+                        break;
+                    case 0xE2:
+                        GenericLinMessageEventArgs publishData3 = new GenericLinMessageEventArgs(m);
+                        CmdE2Event?.Invoke(this, publishData3);
+                        break;
+                    case 0x61:
+                        GenericLinMessageEventArgs publishData4 = new GenericLinMessageEventArgs(m);
+                        Cmd61Event?.Invoke(this, publishData4);
+                        break;
                     default:
                         break;
                 }
@@ -147,6 +167,15 @@ namespace TrumaBoilerDecode
         public DisplayDataEventArgs(TrumaDisplayCommand cmd)
         {
             data = cmd;
+        }
+    }
+
+    public class GenericLinMessageEventArgs
+    {
+        public readonly LINmessage data;
+        public GenericLinMessageEventArgs(LINmessage m)
+        {
+            data = m;
         }
     }
 }

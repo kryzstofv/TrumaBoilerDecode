@@ -13,6 +13,8 @@ namespace TrumaBoilerDecode
     public partial class Form1 : Form
     {
         bool bOpen;
+        int listIndex;
+        List<byte[]> testData;
 
         BoilerDataSource boilerData;
 
@@ -54,7 +56,37 @@ namespace TrumaBoilerDecode
             boilerData = new BoilerDataSource("COM2");
 
             boilerData.NewDisplayData += NewDisplayData;    //listen to new display data
+            boilerData.Cmd3CEvent += New3CData;
+            boilerData.Cmd61Event += New61Data;
+            boilerData.Cmd7DEvent += New7DData;
+            boilerData.CmdE2Event += NewE2Data;
 
+
+            listIndex = 0;
+            testData = new List<byte[]>();
+            testData.Add(d1);
+            testData.Add(d2);
+            testData.Add(d3);
+            testData.Add(d4);
+            testData.Add(d5);
+            testData.Add(d6);
+            testData.Add(d7);
+            testData.Add(d8);
+            testData.Add(d9);
+            testData.Add(d10);
+            testData.Add(d11);
+            testData.Add(wm1);
+            testData.Add(wm2);
+            testData.Add(wm3);
+            testData.Add(wm4);
+            testData.Add(pm1);
+            testData.Add(pm2);
+            testData.Add(pm3);
+            testData.Add(pm4);
+            testData.Add(pm5);
+            testData.Add(asp1);
+            testData.Add(asp2);
+            testData.Add(asp3);
 
 
             LINmessage l1 = new LINmessage(d1);
@@ -85,26 +117,6 @@ namespace TrumaBoilerDecode
             TrumaDisplayCommand w3 = new TrumaDisplayCommand(wm3);
             TrumaDisplayCommand w4 = new TrumaDisplayCommand(wm4);
 
-
-            //CircularBuffer<byte> buf = new CircularBuffer<byte>(512);
-            //buf.Put(new byte[] { 1, 2, 3 }); 
-            //buf.Put(d1);
-            //buf.Put(new byte[] { 1, 2, 3 });
-            //buf.Put(d2);
-            //buf.Put(d3);
-            //buf.Put(new byte[] { 1, 2, 3 });
-            //buf.Put(d4);
-            //buf.Put(d5);
-            //buf.Put(d6);
-            //buf.Put(d7);
-            //buf.Put(d8);
-            //buf.Put(d9);
-            //buf.Put(d10);
-            //buf.Put(d11);
-
-
-            //List<LINmessage> list = boilerData.ParseReceivedData(buf);
-            //boilerData.ProcessMessages(list);
             
 #if false
 
@@ -158,40 +170,44 @@ namespace TrumaBoilerDecode
             textBoxVentMode.Text = "" + e.data.ventPower;
         }
 
+        void New3CData(object sender, GenericLinMessageEventArgs e)
+        {
+            textBox3C.Text = e.data.ToString();
+        }
+        void New7DData(object sender, GenericLinMessageEventArgs e)
+        {
+            textBox7D.Text = e.data.ToString();
+        }
+        void NewE2Data(object sender, GenericLinMessageEventArgs e)
+        {
+            textBoxE2.Text = e.data.ToString();
+        }
+        void New61Data(object sender, GenericLinMessageEventArgs e)
+        {
+            textBox61.Text = e.data.ToString();
+        }
+
+
+        //test function to put one message in per click, plus some other garbage that looks a little bit correct
         private void button2_Click(object sender, EventArgs e)
         {
             CircularBuffer<byte> buf = new CircularBuffer<byte>(512);
+            
             buf.Put(new byte[] { 1, 2, 3 });
-            buf.Put(d1);
-            buf.Put(new byte[] { 1, 2, 3 });
-            buf.Put(d2);
-            buf.Put(d3);
-            buf.Put(new byte[] { 1, 2, 3 });
-            buf.Put(d4);
-            buf.Put(d5);
-            buf.Put(d6);
-            buf.Put(d7);
-            buf.Put(d8);
-            buf.Put(d9);
-            buf.Put(d10);
-            buf.Put(d11);
-            buf.Put(asp1);
-            buf.Put(asp2);
-            buf.Put(asp3);
-            buf.Put(pm1);
-            buf.Put(pm2);
-            buf.Put(pm3);
-            buf.Put(pm4);
-            buf.Put(pm5);
-            buf.Put(wm1);
-            buf.Put(wm2);
-            buf.Put(wm3);
-            buf.Put(wm4);
-
+            buf.Put(testData[listIndex++]);
+            buf.Put(new byte[] { 1, 0x0, 3 });
+            buf.Put(new byte[] { 1, 2, 0x55 });
+            if(listIndex >= testData.Count)
+            {
+                listIndex = 0;
+            }
 
 
             List<LINmessage> list = boilerData.ParseReceivedData(buf);
             boilerData.ProcessMessages(list);
+
+            //do this properly
+            textBox1.Text = list[0].ToString();
         }
     }
 }

@@ -92,6 +92,16 @@ namespace TrumaBoilerDecode
             }
             return false;
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            foreach(byte b in RawData)
+            {
+                s += "0x" + b.ToString("X2") + " ";
+            }
+            return s;
+        }
     }
 
 
